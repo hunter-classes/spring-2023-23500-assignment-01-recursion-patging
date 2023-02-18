@@ -6,8 +6,6 @@
 
 int EMPTY = 0;
 int ME = -1;
-int row = 0;
-int col = 0;
 bool solved = false;
 
 /*
@@ -39,8 +37,8 @@ bool isSolved(int b[5][5]) {
     prints board
 */
 void printBoard(int (b)[5][5]) {
-   std::cout << "[0;0H\n";
-    usleep(1000000);
+   //std::cout << "[0;0H\n";
+    usleep(0);
     for(int i = 0; i<5;i++) {
         std::cout << std::endl;
         for (int j = 0; j<5; j++) {
@@ -67,54 +65,52 @@ void printBoard(int (b)[5][5]) {
 */
 void solve(int board[5][5], int hX, int hY ,int row, int col, int moveNum,bool& solved) {
 
+    int newBoard[5][5];
+    memcpy(newBoard, board, 25 * sizeof(int));
+
     // terminating process if it's solved
     if(solved) { 
         return;
     }
 
     // making move or throwing it out b/c invalid move
-
     if (row < 0 || row > 4 || col < 0|| col > 4) {
         // the move itself is out of bounds
         return;
     }
 
-    if (board[row][col] != EMPTY ) {
-        // it's an occupied slot
+    if (newBoard[row][col] == EMPTY ) {
+        // it' free slot
+
+        // swapping
+        newBoard[hX][hY] = moveNum;
+
+        // analyzing the move
+        if(isSolved(newBoard)) {
+            printBoard(newBoard);
+            solved = true;
+            return;
+        } else {
+            newBoard[row][col] = ME;
+
+            //print board animation
+            printBoard(newBoard);
+            std::cout << row << col << moveNum << std::endl;
+            std::cout << &newBoard;
+
+            // recursive calls
+            solve(newBoard, row, col ,row + 2, col + 1, moveNum + 1, solved);
+            solve(newBoard, row, col ,row + 2, col - 1, moveNum + 1, solved);
+            solve(newBoard, row, col ,row - 2, col - 1, moveNum + 1, solved);
+            solve(newBoard, row, col ,row - 2, col + 1, moveNum + 1, solved);
+            solve(newBoard, row, col ,row + 1, col + 2, moveNum + 1, solved);
+            solve(newBoard, row, col ,row + 1, col - 2, moveNum + 1, solved);
+            solve(newBoard, row, col ,row - 1, col + 2, moveNum + 1, solved);
+            solve(newBoard, row, col ,row - 1, col - 2, moveNum + 1, solved);
+        }
+    } else {
+        // the move in question is invalid because it'd be stepping on an already stepped tile
         return;
-    }
-
-    // swapping
-
-    if (moveNum == 25) { 
-        board[hX][hY] = moveNum;
-    } else { 
-        board[hX][hY] = moveNum;
-        board[row][col] = ME;
-    }
-
-    //print board animation
-    printBoard(board);
-
-    // analyzing the move
-    if(isSolved(board)) {
-        solved = true;
-        printBoard(board);
-        return;
-    }
-
-    // recursive moves
-
-    if (!solved) {
-        solve(board, row, col ,row + 2, col - 1, moveNum + 1, solved);
-        solve(board, row, col ,row + 2, col + 1, moveNum + 1, solved);
-        solve(board, row, col ,row - 2, col - 1, moveNum + 1, solved);
-        solve(board, row, col ,row - 2, col + 1, moveNum + 1, solved);
-        solve(board, row, col ,row + 1, col + 2, moveNum + 1, solved);
-        solve(board, row, col ,row + 1, col - 2, moveNum + 1, solved);
-        solve(board, row, col ,row - 1, col + 2, moveNum + 1, solved);
-        solve(board, row, col ,row - 1, col - 2, moveNum + 1, solved);
-
     }
 }
 
@@ -125,9 +121,14 @@ void solve(int board[5][5], int hX, int hY ,int row, int col, int moveNum,bool& 
 */
 int main() {
     // board setup
-    int board[5][5];
-
-    //= {{1,2,3,4,5},{6,7,8,9,10},{11,12,13,14,15},{16,17,18,19,20},{21,22,23,24,25}};
+    int board[5][5]; 
+    /* = {
+            {1,2,3,4,5},
+            {6,7,8,9,10},
+            {11,12,13,14,15},
+            {16,17,18,19,20},
+            {21,22,23,24,25}};
+    */
     for(int i = 0;i<5;i++) { 
         for(int j=0; j<5;j++) {
             board[i][j] = EMPTY;
@@ -135,7 +136,6 @@ int main() {
     } 
 
     //board[0][0] = ME;
-    
     //printBoard(board);
 
     solve(board, 0, 0, 0, 0, 0, solved);

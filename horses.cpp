@@ -13,7 +13,7 @@ bool solved = false;
 
     determines whether or not the board is solved
 */
-bool isSolved(int b[5][5]) {
+bool isSolved(std::vector<std::vector<int>> b) {
 
     std::vector<int> v;
 
@@ -36,8 +36,8 @@ bool isSolved(int b[5][5]) {
 
     prints board
 */
-void printBoard(int (b)[5][5]) {
-   //std::cout << "[0;0H\n";
+void printBoard(std::vector<std::vector<int>> b) {
+    //std::cout << "[0;0H\n";
     usleep(0);
     for(int i = 0; i<5;i++) {
         std::cout << std::endl;
@@ -63,55 +63,47 @@ void printBoard(int (b)[5][5]) {
     solved : reference to whether or not the move is solved
 
 */
-void solve(int board[5][5], int hX, int hY ,int row, int col, int moveNum,bool& solved) {
+void solve(std::vector<std::vector<int>> b, int hX, int hY ,int row, int col, int moveNum,bool& solved) {
 
-    int newBoard[5][5];
-    memcpy(newBoard, board, 25 * sizeof(int));
+    if(solved) {
+        return;
+    } // killing extraneous calls after the puzzle is solved
 
-    // terminating process if it's solved
-    if(solved) { 
+    if (row < 0 || col < 0 || row > 4 || col > 4 || (b[row][col] != ME && b[row][col] != EMPTY) ) {
+        // if the move is invalid (out of bounds or on a tile we were already on) 
         return;
     }
 
-    // making move or throwing it out b/c invalid move
-    if (row < 0 || row > 4 || col < 0|| col > 4) {
-        // the move itself is out of bounds
+    // making the first move
+    b[hX][hY] = moveNum;
+
+
+    // if solved solved = true, elsewise 
+    if (isSolved(b) || moveNum == 25) {
+        solved = true;
+        std::cout << std::endl;
+        printBoard(b);
+        std::cout << row << col;
         return;
-    }
-
-    if (newBoard[row][col] == EMPTY ) {
-        // it' free slot
-
-        // swapping
-        newBoard[hX][hY] = moveNum;
-
-        // analyzing the move
-        if(isSolved(newBoard)) {
-            printBoard(newBoard);
-            solved = true;
-            return;
-        } else {
-            newBoard[row][col] = ME;
-
-            //print board animation
-            printBoard(newBoard);
-            std::cout << row << col << moveNum << std::endl;
-            std::cout << &newBoard;
-
-            // recursive calls
-            solve(newBoard, row, col ,row + 2, col + 1, moveNum + 1, solved);
-            solve(newBoard, row, col ,row + 2, col - 1, moveNum + 1, solved);
-            solve(newBoard, row, col ,row - 2, col - 1, moveNum + 1, solved);
-            solve(newBoard, row, col ,row - 2, col + 1, moveNum + 1, solved);
-            solve(newBoard, row, col ,row + 1, col + 2, moveNum + 1, solved);
-            solve(newBoard, row, col ,row + 1, col - 2, moveNum + 1, solved);
-            solve(newBoard, row, col ,row - 1, col + 2, moveNum + 1, solved);
-            solve(newBoard, row, col ,row - 1, col - 2, moveNum + 1, solved);
-        }
     } else {
-        // the move in question is invalid because it'd be stepping on an already stepped tile
-        return;
+        b[row][col] = ME;
     }
+    std::cout << std::endl;
+    printBoard(b);
+    std::cout << row << col;
+
+    if (!solved) {
+            // recursive calls
+            solve(b, row, col ,row + 2, col + 1, moveNum + 1, solved);
+            solve(b, row, col ,row + 2, col - 1, moveNum + 1, solved);
+            solve(b, row, col ,row - 2, col - 1, moveNum + 1, solved);
+            solve(b, row, col ,row - 2, col + 1, moveNum + 1, solved);
+            solve(b, row, col ,row + 1, col + 2, moveNum + 1, solved);
+            solve(b, row, col ,row + 1, col - 2, moveNum + 1, solved);
+            solve(b, row, col ,row - 1, col + 2, moveNum + 1, solved);
+            solve(b, row, col ,row - 1, col - 2, moveNum + 1, solved);
+    }
+
 }
 
 /* 
@@ -121,7 +113,13 @@ void solve(int board[5][5], int hX, int hY ,int row, int col, int moveNum,bool& 
 */
 int main() {
     // board setup
-    int board[5][5]; 
+    std::vector<std::vector<int>> board {
+        {0,0,0,0,0},
+        {0,0,0,0,0},
+        {0,0,0,0,0},
+        {0,0,0,0,0},
+        {0,0,0,0,0}
+    };
     /* = {
             {1,2,3,4,5},
             {6,7,8,9,10},
@@ -129,11 +127,6 @@ int main() {
             {16,17,18,19,20},
             {21,22,23,24,25}};
     */
-    for(int i = 0;i<5;i++) { 
-        for(int j=0; j<5;j++) {
-            board[i][j] = EMPTY;
-        }
-    } 
 
     //board[0][0] = ME;
     //printBoard(board);

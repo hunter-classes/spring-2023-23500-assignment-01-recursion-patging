@@ -38,7 +38,7 @@ bool isSolved(std::vector<std::vector<int>> b) {
 */
 void printBoard(std::vector<std::vector<int>> b) {
     //std::cout << "[0;0H\n";
-    usleep(0);
+    //usleep(0);
     for(int i = 0; i<5;i++) {
         std::cout << std::endl;
         for (int j = 0; j<5; j++) {
@@ -64,33 +64,32 @@ void printBoard(std::vector<std::vector<int>> b) {
 
 */
 void solve(std::vector<std::vector<int>> b, int hX, int hY ,int row, int col, int moveNum,bool& solved) {
-
     if(solved) {
         return;
     } // killing extraneous calls after the puzzle is solved
 
-    if (row < 0 || col < 0 || row > 4 || col > 4 || (b[row][col] != ME && b[row][col] != EMPTY) ) {
-        // if the move is invalid (out of bounds or on a tile we were already on) 
+    if (moveNum == 25) {
+        row = hX;
+        row = hY;
+        b[row][col] = EMPTY;
+    }
+
+    if (row < 0 || col < 0 || row > 4 || col > 4 || ( b[row][col] != ME && b[row][col] != EMPTY) ) {
         return;
     }
 
     // making the first move
     b[hX][hY] = moveNum;
 
-
     // if solved solved = true, elsewise 
     if (isSolved(b) || moveNum == 25) {
         solved = true;
-        std::cout << std::endl;
+        std::cout << "Solution : " << std::endl;
         printBoard(b);
-        std::cout << row << col;
         return;
     } else {
         b[row][col] = ME;
     }
-    std::cout << std::endl;
-    printBoard(b);
-    std::cout << row << col;
 
     if (!solved) {
             // recursive calls
@@ -113,14 +112,15 @@ void solve(std::vector<std::vector<int>> b, int hX, int hY ,int row, int col, in
 */
 int main() {
     // board setup
-    std::vector<std::vector<int>> board {
+    std::vector<std::vector<int>> board  {
         {0,0,0,0,0},
         {0,0,0,0,0},
         {0,0,0,0,0},
         {0,0,0,0,0},
         {0,0,0,0,0}
     };
-    /* = {
+    /*
+     = {
             {1,2,3,4,5},
             {6,7,8,9,10},
             {11,12,13,14,15},

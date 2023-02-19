@@ -70,7 +70,7 @@ void solve(std::vector<std::vector<int>> b, int hX, int hY ,int row, int col, in
 
     if (moveNum == 25) {
         row = hX;
-        row = hY;
+        col = hY;
         b[row][col] = EMPTY;
     }
 
